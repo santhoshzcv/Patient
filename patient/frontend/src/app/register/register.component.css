@@ -1,0 +1,28 @@
+#log{
+    padding:60px 40px;
+    margin-top:80px;
+    /* -webkit-box-shadow: -5px 2px 62px 9px rgba(0,0,0,0.75);
+    -moz-box-shadow: -5px 2px 62px 9px rgba(0,0,0,0.75);
+     box-shadow: -5px 2px 62px 9px rgba(0,0,0,0.75); */
+     background-color:  rgba(153,153,153,0.2);
+}
+h1{
+    color:black;
+    text-align: center;
+    margin-top:-50px;
+    font-size:35px;
+}
+
+label{
+    font-size:20px;
+     color:black;
+    
+}
+
+.checkbox{
+    padding:5px;
+}
+.btn{
+    margin-top:40px;
+}
+ 
