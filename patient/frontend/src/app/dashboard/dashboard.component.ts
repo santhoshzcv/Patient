@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit {
     console.log(this.patientForm.value);
     this.service.patientdata(this.patientForm.value).subscribe((res: any) => {
       console.log(res.message)
-      swal("status"+res.message)
+      swal(""+res.message)
       this.patientForm.reset();
       this.getpatientdata();
     })

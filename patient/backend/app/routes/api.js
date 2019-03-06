@@ -1,4 +1,6 @@
 var User = require('../models/user');
+var request = require("request");
+const uuidv1 = require('uuid/v1');
 var PatientData = require('../models/patientdata');
 
 module.exports = function (router) {
@@ -37,16 +39,104 @@ module.exports = function (router) {
     })
 
     router.post('/patientdata', function (req, res) {
+        
         var patientschema = req.body;
         var patientdata = new PatientData(patientschema);
         console.log(patientdata);
+      
         patientdata.save(function (err) {
             if (err) {
                 res.status(200).json({ message: "not saved" })
             } else {
-                res.status(200).json({ message: "saved sucessfully" });
+                 
+               var abc =patient();
+                abc.then(function(){
+                    patientRecord();
+                    res.status(200).json({ message: "saved sucessfully" }); 
+                });
+                     
             }
         })
+
+function patient(){
+         let postData = {
+            "$class": "test.Patient",
+            "patientId": patientdata._id,
+            "name": patientdata.name,
+            "dob": patientdata.dob,
+            "phoneno": patientdata.phoneno,
+            "address": patientdata.address,
+            "bloodgroup":patientdata.bloodgroup
+         }
+
+        const options = {
+            url: "http://localhost:3000/api/Patient",
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        }
+        return new Promise(function(resolve, reject) {
+        request(options, (error, result, body) => {
+            if (error) {
+                return reject(error);  
+            }
+            else if (result.statusCode != 200 && result.statusCode != 201) {
+                console.log(result.statusMessage);
+                return reject(error);
+            }else{
+                console.log(body);
+                resolve(JSON.parse(body));        
+            }
+        });
+    })
+    
+}
+
+function  patientRecord(){
+         let postData1 = {
+            
+                "$class": "test.PatientRecord",
+                "recordId": uuidv1(),
+                "owner": "test.Patient#"+patientdata._id,
+                "hospitalname": patientdata.hospitalname,
+                "doctorname": patientdata.doctorname,
+                "visitdate": patientdata.visitdate,
+                "diseasename": patientdata.diseasename,
+                "paymentbillnumber":patientdata.paymentbillnumber,
+                "paymentmode": patientdata.paymentmode,
+                "amountpaid": patientdata.amountpaid
+              
+         }
+
+        const options = {
+            url: "http://localhost:3000/api/PatientRecord",
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData1)
+        }
+        return new Promise(function(resolve, reject) {
+        request(options, (error, result, body) => {
+            if (error) {
+                return reject(error);  
+            }
+            else if (result.statusCode != 200 && result.statusCode != 201) {
+                return reject(result.statusMessage);
+                // console.log(result.statusMessage)
+            }else{
+                console.log(body);
+                resolve(JSON.parse(body));
+                //  res.status(200).json({ message: "saved sucessfully" });    
+                
+            }
+        });
+    })
+
+    }
+
     })
     
     router.get('/getpatientdata', function (req, res) {
@@ -65,6 +155,8 @@ module.exports = function (router) {
                 console.log(err);
             } else {
                 res.status(200).json({ "patientdata": patientdata })
+
+
             }
         })
    })
